@@ -1,0 +1,56 @@
+# Coursera course "Exploratory Data Analysis" Project 1
+#
+# Plot 2
+#
+rm(list = ls())
+setwd("~/Code/ExData_Plotting1")
+
+my_url <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
+download.file(url = my_url, destfile = "Dataset.zip", method = "curl")
+unzip(zipfile = "Dataset.zip")
+
+household_power_consumption.df <- read.csv(file = "household_power_consumption.txt", 
+                                           sep = ";",
+                                           header = TRUE,
+                                           stringsAsFactors = FALSE,
+                                           na.strings = "?")
+
+household_power_consumption.df <- na.omit(household_power_consumption.df)
+number.records <- nrow(household_power_consumption.df)
+
+power_consumption.df <- data.frame(DateTime              = as.POSIXct(rep(NA, times = number.records)),
+                                   Global_active_power   = as.numeric(rep(NA, times = number.records)),
+                                   Global_reactive_power = as.numeric(rep(NA, times = number.records)),
+                                   Voltage               = as.numeric(rep(NA, times = number.records)),
+                                   Global_intensity      = as.numeric(rep(NA, times = number.records)),
+                                   Sub_metering_1        = as.numeric(rep(NA, times = number.records)),
+                                   Sub_metering_2        = as.numeric(rep(NA, times = number.records)),
+                                   Sub_metering_3        = as.numeric(rep(NA, times = number.records)))
+
+power_consumption.df$DateTime <- paste(household_power_consumption.df$Date, household_power_consumption.df$Time)
+power_consumption.df$DateTime <- as.POSIXct(strptime(power_consumption.df$DateTime, "%d/%m/%Y %H:%M:%S"))
+# 
+power_consumption.df$Global_active_power   <- as.numeric(household_power_consumption.df$Global_active_power)
+power_consumption.df$Global_reactive_power <- as.numeric(household_power_consumption.df$Global_reactive_power)
+power_consumption.df$Voltage               <- as.numeric(household_power_consumption.df$Voltage)
+power_consumption.df$Global_intensity      <- as.numeric(household_power_consumption.df$Global_intensity)
+power_consumption.df$Sub_metering_1        <- as.numeric(household_power_consumption.df$Sub_metering_1)
+power_consumption.df$Sub_metering_2        <- as.numeric(household_power_consumption.df$Sub_metering_2)
+power_consumption.df$Sub_metering_3        <- as.numeric(household_power_consumption.df$Sub_metering_3)
+#
+# Select subset to plot
+#
+plot.data <- power_consumption.df[power_consumption.df$DateTime >= "2007-02-01 00:00:00" & 
+                                  power_consumption.df$DateTime <  "2007-02-02 24:00:00", ]
+plot.data <- na.omit(plot.data)
+
+# Construct the plot and save it to a PNG file with a width of 480 pixels and a height of 480 pixels.
+#
+# Name the plot file as plot2.png
+yrange <- plot.data$Global_active_power
+xrange <- plot.data$DateTime
+
+plot(xrange, yrange, type = "l", ylab = "Global Active Power (kilowatts)", xlab = "")
+png(file = "plot2.png", width = 480, height = 480, units = "px")
+plot(xrange, yrange, type = "l", ylab = "Global Active Power (kilowatts)", xlab = "")
+dev.off()
